@@ -1,0 +1,50 @@
+@model ClientsApp.Models.ContactsViewModel
+
+<h2>Contacts</h2>
+
+<!-- Create Form -->
+<div class="card mb-4">
+    <div class="card-body">
+        <h5>Create Contact</h5>
+        <form asp-action="CreateContact" method="post" class="row g-3">
+            <div class="col-md-3"><input type="text" name="Name" class="form-control" placeholder="Name" required /></div>
+            <div class="col-md-3"><input type="text" name="Surname" class="form-control" placeholder="Surname" required /></div>
+            <div class="col-md-4"><input type="email" name="Email" class="form-control" placeholder="Email" required /></div>
+            <div class="col-md-2"><button type="submit" class="btn btn-primary">Save</button></div>
+        </form>
+    </div>
+</div>
+
+<ul class="nav nav-tabs" id="contactTabs" role="tablist">
+    <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#listTab" type="button">Contact List</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#linkedTab" type="button">Linked Clients</button></li>
+</ul>
+
+<div class="tab-content mt-3">
+    <div class="tab-pane fade show active" id="listTab">
+        @if (!Model.Contacts.Any()) { <p>No contacts found.</p> }
+        else {
+            <table class="table">
+                <thead><tr><th>Name</th><th>Surname</th><th>Email</th><th>Linked Clients</th></tr></thead>
+                <tbody>
+                    @foreach (var c in Model.Contacts) {
+                        <tr><td>@c.Name</td><td>@c.Surname</td><td>@c.Email</td><td>@c.LinkedContactsCount</td></tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+    <div class="tab-pane fade" id="linkedTab">
+        <table class="table">
+            <tbody>
+                @foreach (var item in Model.LinkedClients) {
+                    <tr>
+                        <td style="text-align: left;">@item.ClientName</td>
+                        <td style="text-align: left;">@item.ClientCode</td>
+                        <td style="text-align: center;"><a href="@Url.Action("Unlink", new { id = item.ContactId })">Unlink</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

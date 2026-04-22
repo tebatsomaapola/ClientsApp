@@ -1,0 +1,78 @@
+@model ClientsApp.Models.ClientsViewModel
+
+<h2>Clients</h2>
+
+<!-- CREATE CLIENT SECTION-->
+<div class="card mb-4">
+    <div class="card-body">
+        <h4>Create New Client</h4>
+        <form asp-action="CreateClient" method="post" class="row g-3">
+            <div class="col-auto">
+                <input type="text" name="Name" class="form-control" placeholder="Client Name" required />
+            </div>
+            <div class="col-auto">
+                <input type="text" name="ClientCode" class="form-control" placeholder="Client Code" readonly />
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Create Client</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!--  CLIENTS LIST SECTION-->
+<h4>Clients List</h4>
+@if (!Model.Clients.Any() || Model == null) {
+    <p>No client(s) found.</p>
+} else {
+    <table class="table border">
+        <thead>
+            <tr><th>Name</th><th>Client Code</th><th>Linked Contacts</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var c in Model.Clients) {
+                <tr><td>@c.Name</td><td>@c.ClientCode</td><td>@c.LinkedContactsCount</td></tr>
+            }
+        </tbody>
+    </table>
+}
+
+<hr />
+
+<!--  CONTACT LINKING/UNLINKING SECTION-->
+<h4>Manage Contact Links</h4>
+@if (!Model.Contacts.Any() || Model == null) {
+    <p>No contact(s) found.</p>
+} else {
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>Full Name</th>
+                <th>Current Link</th>
+                <th style="text-align:center">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var con in Model.Contacts) {
+                <tr>
+                    <td>@con.Name, @con.Surname</td>
+                    <td>@(string.IsNullOrEmpty(con.ClientCode) ? "Unlinked" : con.ClientCode)</td>
+                    <td>
+                        <form asp-action="UpdateLink" method="post" class="d-inline">
+                            <input type="hidden" name="contactId" value="@con.Id" />
+                            <select name="newClientCode" onchange="this.form.submit()">
+                                <option value="">-- Unlink --</option>
+                                @foreach (var client in Model.Clients) {
+                                    <!option value="@client.ClientCode" @(con.ClientCode == client.ClientCode ? "selected" : "")>
+                                        Link to @client.ClientCode
+                                    </!option>
+                                }
+                            </select>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
